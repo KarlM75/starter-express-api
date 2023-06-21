@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Card Game</title>
+    <style>
+        .card {
+            display: inline-block;
+            width: 100px;
+            height: 150px;
+            border: 1px solid black;
+            text-align: center;
+            font-size: 18px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Card Game</h1>
+    <div id="player1">
+        <h2>Player 1</h2>
+        <button onclick="drawCard('player1')">Draw Card</button>
+    </div>
+    <div id="player2">
+        <h2>Player 2</h2>
+        <button onclick="drawCard('player2')">Draw Card</button>
+    </div>
+    <div id="deck">
+        <h2>Deck</h2>
+    </div>
+
+    <script src="socket.io.js"></script>
+    <script src="script.js"></script>
+
+var socket = io();
+
+// Function to draw a card
+function drawCard(player) {
+    socket.emit('drawCard', player);
+}
+
+// Receive card from the server
+socket.on('cardDrawn', function (card, player) {
+    var cardHTML = '<div class="card"><img src="' + card + '" alt="Card"></div>';
+    document.getElementById(player).appendChild(document.createRange().createContextualFragment(cardHTML));
+});
+
+// Update deck status
+socket.on('deckEmpty', function () {
+    document.getElementById('deck').innerHTML = '<h2>Deck is empty!</h2>';
+});
+
+// Show opponent's card
+socket.on('opponentCardDrawn', function (card, player) {
+    var cardHTML = '<div class="card"><img src="' + card + '" alt="Card"></div>';
+    document.getElementById(player).appendChild(document.createRange().createContextualFragment(cardHTML));
+});
+</body>
+</html>
+
